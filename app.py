@@ -16,6 +16,12 @@ max_x = max(df['longitude']) + margin
 min_y = min(df['latitude']) - margin
 max_y = max(df['latitude']) + margin
 
+colors = {
+    'background': '#F7F7F7',
+    'text': '#37575B',
+    'markers': '#ABC0C1'
+}
+
 
 def generate_map(df, colors, title, min_x, max_x, min_y, max_y):
     return dcc.Graph(
@@ -25,11 +31,12 @@ def generate_map(df, colors, title, min_x, max_x, min_y, max_y):
                                     lat=df[df['event_type'] == i]['latitude'],
                                     text=df[df['event_type'] == i]['event_type'],
                                     mode='markers',
-                                    opacity=0.7,
                                     marker={
                                         'size': 10,
-                                        'line': {'width': 0.3, 'color': 'white'},
-                                        'color': colors['text']
+                                        'line': {'width': 0.3,
+                                                 'color': colors['text']},
+                                        'color': colors['markers'],
+                                        'opacity':.5
                                     },
                                     name=i
                                 ) for i in df.event_type.unique()
@@ -75,7 +82,13 @@ def generate_hist(df):
                             go.Histogram(
                                 y=df[df['event_type'] == i]['event_type'],
                                 text=df[df['event_type'] == i]['event_type'],
-                                name=i
+                                name=i,
+                                marker=dict(
+                                            color=colors['markers'],
+                                            line={'width': 0.5,
+                                                  'color': colors['text']},
+                                            opacity=.7
+                                            )
                             ) for i in df.event_type.unique()
                         ],
                         'layout': go.Layout(
@@ -91,11 +104,6 @@ def generate_hist(df):
                     }
                 )
 
-
-colors = {
-    'background': '#F7F7F7',
-    'text': '#37575B'
-}
 
 app.layout = html.Div(
     children=[
