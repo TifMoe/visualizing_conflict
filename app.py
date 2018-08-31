@@ -30,10 +30,10 @@ colors = {
     'background': '#F7F7F7',
     'text': '#37575B',
     'markers': '#ABC0C1',
-    'event_types': {'Violence against civilians': '#810f7c',
-                    'Riots/Protests': '#e0ecf4',
-                    'Remote violence': '#8c96c6',
-                    'Battle': '#8856a7'}
+    'event_types': {'Violence against civilians': '#37575B',
+                    'Riots/Protests': '#A7C4C2',
+                    'Remote violence': '#F05D5E',
+                    'Battle': '#C8AD55'}
 }
 
 
