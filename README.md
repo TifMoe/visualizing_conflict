@@ -28,3 +28,8 @@ To stop the container run:
 ```bash
 $ docker stop 0ccb6fa460f7
 ```
+
+## TODO
+1) Move off of the default development server to a production server
+2) Deploy dockerized web app to cloud server
+3) Optimize performance of dashboard by caching or aggregating data before plotting
