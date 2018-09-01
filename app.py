@@ -2,13 +2,14 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
-import plotly.graph_objs as go
 from datetime import datetime
+import plotly.graph_objs as go
 
 app = dash.Dash()
 
-df = pd.read_csv('data/world_conflict.csv', usecols=['longitude', 'latitude', 'region', 'admin1', 'location',
-                                                     'event_type', 'fatalities', 'event_date'])
+df = pd.read_csv('https://query.data.world/s/tt5efa64gl6ruwmxz4wdgmhfwroi4r',
+                 usecols=['longitude', 'latitude', 'region', 'admin1', 'location',
+                          'event_type', 'fatalities', 'event_date'])
 
 df = df.loc[:20000].copy()
 
@@ -16,6 +17,9 @@ df['event_type'] = ['Battle' if e[:6] == 'Battle' else e
                     for e in df['event_type']]
 
 df['event_date'] = [datetime.strptime(d, "%d-%b-%y") for d in df['event_date']]
+
+
+# Create df aggregated by date for timeline
 df_days = df.groupby(['event_date', 'event_type'], as_index=False).agg({'fatalities': ['count', 'sum']})
 
 margin = 5
@@ -25,6 +29,7 @@ max_x = max(df['longitude']) + margin
 
 min_y = min(df['latitude']) - margin
 max_y = max(df['latitude']) + margin
+
 
 colors = {
     'background': '#F7F7F7',
@@ -38,7 +43,6 @@ colors = {
 
 
 def generate_timeline(df):
-    print(df.event_type.unique())
     return dcc.Graph(
                     id='conflict_timeline',
                     figure={
@@ -209,7 +213,6 @@ app.layout = html.Div(
     style={'backgroundColor': colors['background'], 'margin-top': '-30px', 'height': '2000px'})
 
 
-
 @app.callback(
     dash.dependencies.Output('conflict_map_div', 'children'),
     [dash.dependencies.Input('conflict_type_hist', 'clickData')])
@@ -243,4 +246,5 @@ for css in external_css:
 
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(host='0.0.0.0',
+                   port=5000)
