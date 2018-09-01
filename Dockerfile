@@ -12,6 +12,8 @@ RUN pip install gunicorn
 
 ADD . /app
 
+RUN python src/make_data.py
+
 ENV NAME World
 
 EXPOSE 5000

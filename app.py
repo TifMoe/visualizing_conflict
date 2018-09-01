@@ -2,22 +2,12 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
-from datetime import datetime
-import plotly.graph_objs as go
+from src.make_plots import generate_timeline, generate_hist, generate_map, colors
 
 app = dash.Dash()
 
-df = pd.read_csv('https://query.data.world/s/tt5efa64gl6ruwmxz4wdgmhfwroi4r',
-                 usecols=['longitude', 'latitude', 'region', 'admin1', 'location',
-                          'event_type', 'fatalities', 'event_date'])
-
-df = df.loc[:20000].copy()
-
-df['event_type'] = ['Battle' if e[:6] == 'Battle' else e
-                    for e in df['event_type']]
-
-df['event_date'] = [datetime.strptime(d, "%d-%b-%y") for d in df['event_date']]
-
+df = pd.read_csv('data/world_conflict.csv')
+df = df.loc[:20000].copy()  # Limit data until performance optimization
 
 # Create df aggregated by date for timeline
 df_days = df.groupby(['event_date', 'event_type'], as_index=False).agg({'fatalities': ['count', 'sum']})
@@ -26,147 +16,8 @@ margin = 5
 
 min_x = min(df['longitude']) - margin
 max_x = max(df['longitude']) + margin
-
 min_y = min(df['latitude']) - margin
 max_y = max(df['latitude']) + margin
-
-
-colors = {
-    'background': '#F7F7F7',
-    'text': '#37575B',
-    'markers': '#ABC0C1',
-    'event_types': {'Violence against civilians': '#37575B',
-                    'Riots/Protests': '#A7C4C2',
-                    'Remote violence': '#F05D5E',
-                    'Battle': '#C8AD55'}
-}
-
-
-def generate_timeline(df):
-    return dcc.Graph(
-                    id='conflict_timeline',
-                    figure={
-                        'data': [
-                            go.Scatter(
-                                x=df[df['event_type']==i]['event_date'],
-                                y=df[df['event_type']==i]['fatalities']['sum'],
-                                line=dict(color=colors['event_types'][i])
-                            ) for i in df.event_type.unique()
-                        ],
-                        'layout': go.Layout(
-                            plot_bgcolor=colors['background'],
-                            paper_bgcolor=colors['background'],
-                            height=350,
-                            title='Fatalities per day',
-                            font={'color': colors['text']},
-                            margin={'l': 30, 'b': 30, 't': 30, 'r': 10},
-                            showlegend=False,
-                            hovermode='closest',
-                            xaxis=dict(
-                                    rangeselector=dict(
-                                        buttons=list([
-                                            dict(count=1,
-                                                 label='1m',
-                                                 step='month',
-                                                 stepmode='backward'),
-                                            dict(count=6,
-                                                 label='6m',
-                                                 step='month',
-                                                 stepmode='backward'),
-                                            dict(step='all')
-                                        ])
-                                    ),
-                                    rangeslider=dict(
-                                        visible=True
-                                    ),
-                                    type='date'
-                                ))
-                    }
-                )
-
-
-def generate_map(df, colors, title, min_x, max_x, min_y, max_y):
-    return dcc.Graph(
-                id='conflict_map',
-                figure={'data': [go.Scattergeo(
-                                    lon=df[df['event_type'] == i]['longitude'],
-                                    lat=df[df['event_type'] == i]['latitude'],
-                                    text=df[df['event_type'] == i]['event_type'],
-                                    mode='markers',
-                                    marker={
-                                        'size': 10,
-                                        'line': {'width': 0.3,
-                                                 'color': colors['text']},
-                                        'color': [colors['event_types'][e]
-                                                  for e in df[df['event_type'] == i]['event_type']],
-                                        'opacity':.5
-                                    },
-                                    name=i
-                                ) for i in df.event_type.unique()
-                                ],
-                        'layout': go.Layout(
-                                    geo=dict(
-                                        showland=True,
-                                        landcolor= 'white',
-                                        countrycolor=colors['text'],
-                                        showsubunits=True,
-                                        subunitcolor=colors['background'],
-                                        subunitwidth=5,
-                                        showcountries=True,
-                                        oceancolor=colors['background'],
-                                        showocean=True,
-                                        showcoastlines=True,
-                                        showframe=False,
-                                        coastlinecolor=colors['text'],
-                                        lonaxis={'range': [min_x, max_x]},
-                                        lataxis={'range': [min_y, max_y]},
-                                        resolution=50),
-                                    xaxis={'title': 'Longitude', 'range': [min_x, max_x]},
-                                    yaxis=dict(scaleanchor="x", scaleratio=1, range=[min_y, max_y]),
-                                    title=title,
-                                    plot_bgcolor=colors['background'],
-                                    paper_bgcolor=colors['background'],
-                                    autosize=True,
-                                    font={'color': colors['text']},
-                                    margin={'l': 10, 'b': 10, 't': 30, 'r': 10},
-                                    showlegend=False,
-                                    hovermode='closest'
-                                )
-                        }
-                )
-
-
-def generate_hist(df):
-    return dcc.Graph(
-                    id='conflict_type_hist',
-                    clickData={'points': [{'text': list(colors['event_types'].keys())}]},
-                    figure={
-                        'data': [
-                            go.Histogram(
-                                y=df[df['event_type'] == i]['event_type'],
-                                text=df[df['event_type'] == i]['event_type'],
-                                name=i,
-                                marker=dict(
-                                            color=[colors['event_types'][e]
-                                                   for e in df[df['event_type'] == i]['event_type']],
-                                            line={'width': 0.5,
-                                                  'color': colors['text']},
-                                            opacity=.7
-                                            )
-                            ) for i in df.event_type.unique()
-                        ],
-                        'layout': go.Layout(
-                            plot_bgcolor=colors['background'],
-                            paper_bgcolor=colors['background'],
-                            autosize=True,
-                            title='Conflict Event Types',
-                            font={'color': colors['text']},
-                            margin={'l': 200, 'b': 40, 't': 30, 'r': 10},
-                            showlegend=False,
-                            hovermode='closest'
-                        )
-                    }
-                )
 
 
 app.layout = html.Div(
