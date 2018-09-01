@@ -1,6 +1,6 @@
 # visualizing_conflict
 Explore Dash framework by creating a dashboard visualization of world conflict
-Data from the [ACLED](https://www.acleddata.com/about-acled/), accessed through [data.world](https://data.world/makeovermonday/2018w34-visualizing-conflict)
+Data from [ACLED](https://www.acleddata.com/about-acled/), accessed through [data.world](https://data.world/makeovermonday/2018w34-visualizing-conflict)
 
 ![dashboard example](https://github.com/TifMoe/visualizing_conflict/blob/master/static/dashboard2.0.png)
 
