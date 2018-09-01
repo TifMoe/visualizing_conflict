@@ -48,4 +48,5 @@ $ docker stop 0ccb6fa460f7
 > - Optimize performance by caching or aggregating data before plotting
 > - Hook up interaction between timeline slider and other two graphs
 > - Finish country select dropdown interaction
+> - Capture state in clickable interactions to enable 'unclick' functionality
 > - Aggregate conflicts to city level for map (after other filters applied) and size by count
