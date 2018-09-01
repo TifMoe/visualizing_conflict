@@ -1,0 +1,7 @@
+setuptools
+python-dateutil
+pytz
+dash==0.26.0
+dash-core-components==0.27.2
+dash-html-components==0.11.0
+dash-renderer==0.13.2
