@@ -106,7 +106,7 @@ def generate_map(df, colors, title, min_x, max_x, min_y, max_y):
                 )
 
 
-def generate_hist(df):
+def generate_hist(df, title='Conflict Event Types'):
     return dcc.Graph(
                     id='conflict_type_hist',
                     clickData={'points': [{'text': list(colors['event_types'].keys())}]},
@@ -129,7 +129,7 @@ def generate_hist(df):
                             plot_bgcolor=colors['background'],
                             paper_bgcolor=colors['background'],
                             autosize=True,
-                            title='Conflict Event Types',
+                            title=title,
                             font={'color': colors['text']},
                             margin={'l': 200, 'b': 40, 't': 30, 'r': 10},
                             showlegend=False,
