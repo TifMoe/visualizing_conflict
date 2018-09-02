@@ -1,6 +1,6 @@
 # visualizing_conflict
-Explore Dash framework for creating visualization of world conflict
-Data from the [ACLED](https://www.acleddata.com/about-acled/), accessed through [data.world](https://data.world/makeovermonday/2018w34-visualizing-conflict)
+Explore Dash framework by creating a dashboard visualization of world conflict
+Data from [ACLED](https://www.acleddata.com/about-acled/), accessed through [data.world](https://data.world/makeovermonday/2018w34-visualizing-conflict)
 
 ![dashboard example](https://github.com/TifMoe/visualizing_conflict/blob/master/static/dashboard2.0.png)
 
@@ -44,4 +44,9 @@ $ docker stop 0ccb6fa460f7
 ## TODO
 1) Move off of the default development server to a production server
 2) Deploy dockerized web app to cloud server
-3) Optimize performance of dashboard by caching or aggregating data before plotting
+3) Improve dashboard:
+> - Optimize performance by caching or aggregating data before plotting
+> - Hook up interaction between timeline slider and other two graphs
+> - Finish country select dropdown interaction
+> - Capture state in clickable interactions to enable 'unclick' functionality
+> - Aggregate conflicts to city level for map (after other filters applied) and size by count
