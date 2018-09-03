@@ -34,7 +34,7 @@ CONTAINER ID  IMAGE             COMMAND          CREATED          STATUS        
 0ccb6fa460f7  dashboards:first  "python app.py"  20 seconds ago   Up 18 seconds  127.0.0.1:8000->5000/tcp  vigilant_perlman
 ```
 
-After your docker container is running, you should be able to open a tab in your browser and navigate to your local host port 8000 to view the running application. **[http://127.0.0.1:8000/**(http://127.0.0.1:8000/)
+After your docker container is running, you should be able to open a tab in your browser and navigate to your local host port 8000 to view the running application. [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 To stop the container run:
 ```bash
