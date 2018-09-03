@@ -2,7 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
-from src.make_plots import generate_timeline, generate_hist, generate_map, colors
+from src.make_plots import generate_timeline, generate_hist, generate_map, colors, month_map
 
 app = dash.Dash()
 app.config['suppress_callback_exceptions']=True
@@ -20,6 +20,7 @@ max_x = max(df['longitude']) + margin
 min_y = min(df['latitude']) - margin
 max_y = max(df['latitude']) + margin
 
+
 app.layout = html.Div(
     children=[
             html.Div(className='container-fluid',
@@ -31,17 +32,11 @@ app.layout = html.Div(
                                             html.H5('Select Regions to Explore Below', style={'color': colors['text'],
                                                                                               'align': 'center'}),
                                             html.Div(
-                                               dcc.Checklist(id='region_select',
-                                                             values=['Middle East'],
-                                                             options=[{'label': c, 'value': c}
+                                               dcc.Dropdown(id='region_select',
+                                                            value=['Middle East'],
+                                                            options=[{'label': c, 'value': c}
                                                                       for c in sorted(df['region'].unique())],
-                                                             labelStyle={'display': 'inline-block',
-                                                                         'paddingRight': 15,
-                                                                         'paddingLeft': 15,
-                                                                         'paddingBottom': 5,
-                                                                         'font-size': 18,
-                                                                         },
-                                                             inputClassName="checkbox"
+                                                            multi=True
                                                              ),
                                                )
                                             ],
@@ -54,13 +49,14 @@ app.layout = html.Div(
                                html.Div(className='row',
                                         children=[
                                             html.Div(id='conflict_timeline_div',
-                                                    className='col m12',
-                                                    children=generate_timeline(df_days))
-                                    ]),
+                                                     className='col m12',
+                                                     children=generate_timeline(df_days)),
+                                            html.Br(),
 
-                               html.Br(),
+                                        ]),
 
                                html.Div(className='row', children=[
+
                                    html.Div(id='conflict_map_div', children='', className='col s12 m8 l8'),
                                    html.Div(id='conflict_type_hist_div',
                                             className='col s12 m4 l4',
@@ -77,8 +73,9 @@ app.layout = html.Div(
 @app.callback(
     dash.dependencies.Output('conflict_map_div', 'children'),
     [dash.dependencies.Input('conflict_type_hist', 'clickData'),
-     dash.dependencies.Input('region_select', 'values')])
-def update_map(event_selection, region_selection):
+     dash.dependencies.Input('region_select', 'value'),
+     dash.dependencies.Input('conflict_timeline', 'relayoutData')])
+def update_map(event_selection, region_selection, time_selection):
 
     conflict_type = event_selection["points"][0]['text']
 
@@ -106,17 +103,28 @@ def update_map(event_selection, region_selection):
 
 @app.callback(
     dash.dependencies.Output('conflict_type_hist_div', 'children'),
-    [dash.dependencies.Input('region_select', 'values')])
-def update_hist(region_selection):
-    mask = [True if r in set(region_selection)
-            else False for r in df['region']]
+    [dash.dependencies.Input('region_select', 'value'),
+     dash.dependencies.Input('conflict_timeline', 'relayoutData')])
+def update_hist(region_selection, timeline_selection):
+    try:
+        start_date = timeline_selection['xaxis.range'][0]
+        end_date = timeline_selection['xaxis.range'][1]
+
+        mask = [True if r in set(region_selection) and d > start_date and d < end_date
+                        else False
+                       for (r, d) in zip(df['region'], df['event_date'])]
+    except KeyError:
+        mask = [True if r in set(region_selection)
+                else False
+                for r in df['region']]
+
     dff = df[mask]
     return generate_hist(df=dff)
 
 
 @app.callback(
     dash.dependencies.Output('conflict_timeline_div', 'children'),
-    [dash.dependencies.Input('region_select', 'values')])
+    [dash.dependencies.Input('region_select', 'value')])
 def update_hist(region_selection):
     mask = [True if r in region_selection
             else False for r in df['region']]

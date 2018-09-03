@@ -11,5 +11,8 @@ df['event_type'] = ['Battle' if e[:6] == 'Battle' else e
                     for e in df['event_type']]
 
 df['event_date'] = [datetime.strptime(d, "%d-%b-%y") for d in df['event_date']]
+df['year_month'] = [str(d.year) + '_' + str(d.month) for d in df['event_date']]
+
+df['region'] = [r if r == 'Middle East' else r.split()[1] for r in df['region']]
 
 df.to_csv('data/world_conflict.csv', index=False)
